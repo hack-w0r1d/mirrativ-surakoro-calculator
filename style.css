@@ -14,10 +14,22 @@
   --ink: #260600;
   --ink-muted: rgba(38, 6, 0, .74);
   --link-ink: #7a4400;
+  --emomo-purple: #c77dff;
+  --emomo-purple-deep: #6a3fb5;
+  --emomo-mist-a: rgba(196, 168, 240, .55);
+  --emomo-mist-b: rgba(216, 190, 250, .45);
+  --emomo-panel-bg: rgba(255, 255, 255, .92);
+  --emomo-panel-border: rgba(180, 140, 220, .4);
+  --emomo-ink: #4a3a66;
+  --emomo-ink-muted: #7a6a96;
 }
 
 * {
   box-sizing: border-box;
+}
+
+html {
+  background: black;
 }
 
 body {
@@ -109,6 +121,154 @@ label {
 .lead a {
   color: var(--link-ink);
   font-weight: 600;
+}
+
+.emomo-note {
+  display: block;
+  width: fit-content;
+  margin: 16px 0 0 10px;
+  padding: 3px 8px;
+  background: linear-gradient(135deg, var(--emomo-purple), var(--emomo-purple-deep));
+  border-radius: 999px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.emomo-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  margin-top: 8px;
+  background:
+    radial-gradient(circle at 15% 20%, var(--emomo-mist-a), transparent 60%),
+    radial-gradient(circle at 85% 15%, var(--emomo-mist-b), transparent 65%),
+    var(--emomo-panel-bg);
+  border: 1px solid var(--emomo-panel-border);
+  border-radius: 12px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.emomo-bar.is-active {
+  border-color: rgba(180, 140, 220, .7);
+  box-shadow: 0 0 24px rgba(150, 90, 220, .2);
+}
+
+.emomo-bar-label {
+  flex: 1;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--emomo-ink);
+}
+
+.emomo-switch {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.emomo-switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  opacity: 0;
+}
+
+.emomo-switch-track {
+  position: relative;
+  width: 40px;
+  height: 22px;
+  background: #ffffff;
+  border: 1px solid var(--emomo-panel-border);
+  border-radius: 999px;
+  transition: background .2s, border-color .2s;
+}
+
+.emomo-switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 16px;
+  height: 16px;
+  background: #b0a0c8;
+  border-radius: 50%;
+  transition: transform .2s, background .2s;
+}
+
+.emomo-switch input:checked + .emomo-switch-track {
+  background: linear-gradient(135deg, var(--emomo-purple), var(--emomo-purple-deep));
+  border-color: transparent;
+}
+
+.emomo-switch input:checked + .emomo-switch-track .emomo-switch-thumb {
+  background: #fff;
+  transform: translateX(18px);
+}
+
+.emomo-switch input:focus-visible + .emomo-switch-track {
+  box-shadow: 0 0 0 3px rgba(150, 90, 220, .3);
+}
+
+.emomo-switch-state {
+  min-width: 28px;
+  color: var(--emomo-ink-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.emomo-bar.is-active .emomo-switch-state {
+  color: var(--emomo-purple-deep);
+}
+
+.emomo-select {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 14px;
+  margin-top: 8px;
+  background:
+    radial-gradient(circle at 20% 20%, var(--emomo-mist-a), transparent 55%),
+    radial-gradient(circle at 80% 80%, var(--emomo-mist-b), transparent 55%),
+    var(--emomo-panel-bg);
+  border: 1px solid var(--emomo-panel-border);
+  border-radius: 12px;
+}
+
+.emomo-select[hidden] {
+  display: none;
+}
+
+.emomo-select .field[hidden] {
+  display: none;
+}
+
+.emomo-select label {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--emomo-ink-muted);
+  font-size: 12px;
+}
+
+.emomo-select select {
+  width: 100%;
+  padding: 10px 11px;
+  background: #ffffff;
+  border: 1px solid var(--emomo-panel-border);
+  border-radius: 7px;
+  color: var(--emomo-ink);
+  font: inherit;
+  font-size: 16px;
+}
+
+.emomo-select select:disabled {
+  color: var(--emomo-ink);
+  background: #f4eefb;
+  opacity: 1;
 }
 
 .tabs {
@@ -263,6 +423,21 @@ select:focus {
   -webkit-background-clip: text;
 }
 
+.result.is-highlight.emomo-result {
+  border-color: rgba(180, 140, 220, .55);
+  background:
+    radial-gradient(circle at 15% 20%, var(--emomo-mist-a), transparent 60%),
+    radial-gradient(circle at 85% 15%, var(--emomo-mist-b), transparent 65%),
+    rgba(0, 0, 0, .22);
+}
+
+.result.is-highlight.emomo-result b {
+  color: transparent;
+  background: linear-gradient(100deg, var(--emomo-mist-b), var(--emomo-purple));
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
 .result span {
   color: var(--muted);
   font-size: 12px;
@@ -411,7 +586,8 @@ select:focus {
 }
 
 @media (max-width: 420px) {
-  .grid.two {
+  .grid.two,
+  .emomo-select {
     grid-template-columns: 1fr;
   }
 

@@ -27,7 +27,7 @@
     <meta name="twitter:description" content="スラコロ専用ギフトの期待値を簡単に確認！">
     <meta name="twitter:image" content="https://hack-w0r1d.github.io/mirrativ-surakoro-calculator/images/x-card.jpg">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎁</text></svg>">
-    <link rel="stylesheet" href="style.css?v=1.0.0">
+    <link rel="stylesheet" href="style.css?v=1.1.0">
     <link rel="apple-touch-icon" sizes="192x192" href="apple-touch-icon.jpg">
   </head>
   <body>
@@ -36,6 +36,31 @@
         <h1>スラコロ専用ギフト<br class="sp-only">期待値計算ツール</h1>
         <p class="lead">スラコロ専用ギフトで獲得できるGP・オッズ・アイテムの期待値の目安や確率を確認できます。</p>
       </header>
+      <p class="emomo-note">癒しのおばけシスター対応</p>
+      <div class="emomo-bar" id="emomoBar">
+        <span class="emomo-bar-label">エモモアイテムを設定する</span>
+        <label class="emomo-switch">
+          <input type="checkbox" id="emomoEnabled">
+          <span class="emomo-switch-track"><span class="emomo-switch-thumb"></span></span>
+          <span class="emomo-switch-state" id="emomoState">OFF</span>
+        </label>
+      </div>
+      <div class="emomo-select" id="emomoSelect" hidden>
+        <div class="field">
+          <label for="emomoRarity">レア度</label>
+          <select id="emomoRarity">
+            <option value="">選択してください</option>
+            <option value="star5">★5</option>
+            <option value="star4">★4</option>
+            <option value="star3">★3</option>
+            <option value="star2">★2</option>
+          </select>
+        </div>
+        <div class="field" id="emomoItemField" hidden>
+          <label for="emomoItem">アイテム</label>
+          <select id="emomoItem"></select>
+        </div>
+      </div>
       <div class="tabs" role="tablist" aria-label="計算メニュー">
         <button type="button" class="tab" id="tab-send" role="tab" aria-selected="true" aria-controls="panel-send" data-target="panel-send">贈る個数から計算</button>
         <button type="button" class="tab" id="tab-budget" role="tab" aria-selected="false" aria-controls="panel-budget" data-target="panel-budget" tabindex="-1">使用コインから計算</button>
@@ -65,6 +90,10 @@
           </div>
         </div>
         <div class="results">
+          <div class="result is-highlight emomo-result" id="emomoResultSend" hidden>
+            <span>選択したアイテムが当たる確率</span>
+            <b id="emomoProbSend">アイテムが選択されていません</b>
+          </div>
           <div class="result">
             <span>GP期待値</span>
             <b id="gpResult">0 GP</b>
@@ -109,6 +138,10 @@
           </div>
         </div>
         <div class="results">
+          <div class="result is-highlight emomo-result" id="emomoResultBudget" hidden>
+            <span>選択したアイテムが当たる確率</span>
+            <b id="emomoProbBudget">アイテムが選択されていません</b>
+          </div>
           <div class="result">
             <span>GP期待値</span>
             <b id="budgetGpResult">0 GP</b>
@@ -168,6 +201,10 @@
           </div>
         </div>
         <div class="results">
+          <div class="result is-highlight emomo-result" id="emomoResultGp" hidden>
+            <span>選択したアイテムが当たる確率</span>
+            <b id="emomoProbGp">アイテムが選択されていません</b>
+          </div>
           <div class="result is-highlight">
             <span id="gpNeedCountLabel">GP貯めるのに必要な個数の目安</span>
             <b id="gpNeedCount">0 個</b>
@@ -212,6 +249,10 @@
           </div>
         </div>
         <div class="results">
+          <div class="result is-highlight emomo-result" id="emomoResultOdds" hidden>
+            <span>選択したアイテムが当たる確率</span>
+            <b id="emomoProbOdds">アイテムが選択されていません</b>
+          </div>
           <div class="result is-highlight">
             <span id="oddsNeedCountLabel">オッズLv.0Upに必要な個数の目安</span>
             <b id="oddsNeedCount">0 個</b>
@@ -256,6 +297,10 @@
           </div>
         </div>
         <div class="results">
+          <div class="result is-highlight emomo-result" id="emomoResultDoll" hidden>
+            <span>選択したアイテムが当たる確率</span>
+            <b id="emomoProbDoll">アイテムが選択されていません</b>
+          </div>
           <div class="result is-highlight">
             <span id="dollNeedCountLabel">限界突破ぶる太くん人形0個獲得に必要な個数の目安</span>
             <b id="dollNeedCount">0 個</b>
@@ -296,6 +341,6 @@
         </p>
       </div>
     </footer>
-  <script src="script.js?v=1.0.0"></script>
+  <script src="script.js?v=1.1.0"></script>
   </body>
 </html>

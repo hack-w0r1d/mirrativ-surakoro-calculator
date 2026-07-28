@@ -2,6 +2,7 @@ const $ = id => document.getElementById(id);
 const number = id => Math.max(0, Number($(id).value) || 0);
 const integer = n => Math.ceil(n).toLocaleString('ja-JP');
 const decimal = n => n.toLocaleString('ja-JP', { maximumFractionDigits: 1 });
+const percent = n => `${(n * 100).toLocaleString('ja-JP', { maximumFractionDigits: 2 })}%`;
 const coins = n => `${integer(n)} コイン`;
 
 // ===== スラコロ: 宝箱の中身データ =====
@@ -51,6 +52,95 @@ const giftInputIds = {
   deluxeTen: 'deluxeTen'
 };
 
+// ===== エモモアイテム選択: エモモの宝玉 排出率データ =====
+// prob: 個別の排出確率(小数)。「その他」は各レア度で一番確率の高いアイテム群のみを対象とし、
+// 表示確率は合算せず、番号が一番若いアイテムの個別確率を代表値として使用する
+const gemRarities = {
+  star5: {
+    items: [
+      { id: 'gem2', name: 'いやしのおばけ・ほわみゃ&くらにゃ', prob: 0.0001 }
+    ],
+    otherProb: 0
+  },
+  star4: {
+    items: [
+      { id: 'gem1', name: '頭乗りがくがくアトラン', prob: 0.003 },
+      { id: 'gem3', name: 'ひーりんぐしんぷのほわほわストールコーデ', prob: 0.0012 },
+      { id: 'gem4', name: 'りふれっしゅしすたーのひらひらリボンドレス', prob: 0.0012 },
+      { id: 'gem5', name: 'ほわみゃのかいふくクロスヘアチャーム', prob: 0.0012 },
+      { id: 'gem6', name: 'ふわふわたましいのリフレッシュヘアリング', prob: 0.0016 },
+      { id: 'gem7', name: 'おそうじフワフワくもさんほうき', prob: 0.0016 },
+      { id: 'gem8', name: 'りふれっしゅしすたーのフリフリおばけヴェール', prob: 0.0016 }
+    ],
+    otherProb: 0.008 // その他代表: gem9(個別確率)
+  },
+  star3: {
+    items: [
+      { id: 'gem19', name: 'たましいのおそうじタイム♪', prob: 0.02 }
+    ],
+    otherProb: 0.028 // その他代表: gem20(個別確率)
+  },
+  star2: {
+    items: [],
+    otherProb: 0.0801 // その他代表: gem26(個別確率)
+  }
+};
+
+let emomoEnabled = false;
+
+function updateEmomoItemOptions() {
+  const rarity = $('emomoRarity').value;
+  const field = $('emomoItemField');
+  const select = $('emomoItem');
+  const group = gemRarities[rarity];
+  if (!rarity || !group.items.length) {
+    field.hidden = true;
+    select.innerHTML = '';
+    select.disabled = false;
+    return;
+  }
+  field.hidden = false;
+  if (group.items.length === 1 && group.otherProb === 0) {
+    // アイテムが1つしかないレア度は選択させず固定表示にする
+    select.innerHTML = `<option value="${group.items[0].id}">${group.items[0].name}</option>`;
+    select.disabled = true;
+    return;
+  }
+  select.disabled = false;
+  const options = group.items.map(item => `<option value="${item.id}">${item.name}</option>`);
+  if (group.otherProb > 0) options.push('<option value="other">その他</option>');
+  select.innerHTML = `<option value="">選択してください</option>${options.join('')}`;
+}
+
+function selectedGemProb() {
+  const rarity = $('emomoRarity').value;
+  if (!rarity) return null;
+  const group = gemRarities[rarity];
+  if (!group.items.length) return group.otherProb;
+  const itemId = $('emomoItem').value;
+  if (!itemId) return null;
+  if (itemId === 'other') return group.otherProb;
+  const item = group.items.find(i => i.id === itemId);
+  return item ? item.prob : null;
+}
+
+// totalDraws(期待値)を切り捨てた回数だけ独立抽選したと仮定して的中確率を算出
+function applyEmomoResult(blockId, valueId, totalDraws) {
+  const block = $(blockId);
+  if (!emomoEnabled) {
+    block.hidden = true;
+    return;
+  }
+  block.hidden = false;
+  const prob = selectedGemProb();
+  if (prob === null) {
+    $(valueId).textContent = 'アイテムが選択されていません';
+    return;
+  }
+  const draws = Math.floor(totalDraws);
+  $(valueId).textContent = percent(1 - Math.pow(1 - prob, draws));
+}
+
 function renderSend() {
   let totalDraws = 0;
   let totalMedal = 0;
@@ -78,6 +168,7 @@ function renderSend() {
   $('medalResult').textContent = `${decimal(totalMedal)} メダル`;
   $('freeCoinsResult').textContent = coins(freeCoinsSpent);
   $('paidCoinsResult').textContent = coins(paidCoinsSpent);
+  applyEmomoResult('emomoResultSend', 'emomoProbSend', totalDraws);
 }
 
 // 無償コインは「10連 普通の宝箱」、有償コインは「10連 豪華な宝箱」を優先消化
@@ -109,6 +200,7 @@ function renderBudget() {
   $('budgetDollResult').textContent = `${decimal(totalDoll)} 個`;
   $('budgetGemResult').textContent = `${decimal(totalDraws)} 個`;
   $('budgetMedalResult').textContent = `${decimal(totalMedal)} メダル`;
+  applyEmomoResult('emomoResultBudget', 'emomoProbBudget', totalDraws);
   $('budgetComparison').innerHTML = rows.map(row => {
     const selectedClass = row.count > 0 ? 'is-selected' : '';
     const currencyLabel = row.gift.currency === 'free' ? '無償' : '有償';
@@ -140,6 +232,7 @@ function renderGp() {
   $('gpNeedCount').textContent = `${integer(need)} 個`;
   $('gpNeedCoins').textContent = `${integer(need * gift.price)} コイン(${currencyLabel})`;
   $('gpExpectedResult').textContent = `${decimal(need * gpPerUnit)} GP`;
+  applyEmomoResult('emomoResultGp', 'emomoProbGp', need * perUnit.draws);
 
   $('gpComparison').innerHTML = Object.entries(gifts).map(([key, rowGift]) => {
     const rowGpPerUnit = giftPerUnit(rowGift).draws * GP_PER_DRAW;
@@ -163,6 +256,7 @@ function renderOdds() {
   $('oddsNeedCount').textContent = `${integer(need)} 個`;
   $('oddsNeedCoins').textContent = `${integer(need * gift.price)} コイン(${currencyLabel})`;
   $('oddsExpectedResult').textContent = `${decimal(need * oddsPerUnit)} Lv.Up`;
+  applyEmomoResult('emomoResultOdds', 'emomoProbOdds', need * oddsPerUnit);
 
   $('oddsComparison').innerHTML = Object.entries(gifts).map(([key, rowGift]) => {
     const rowOddsPerUnit = giftPerUnit(rowGift).draws;
@@ -177,15 +271,16 @@ function renderDoll() {
   const target = number('dollTarget');
   const selectedKey = $('dollGiftType').value;
   const gift = gifts[selectedKey];
-  const dollPerUnit = giftPerUnit(gift).doll;
-  const need = dollPerUnit > 0 ? Math.ceil(target / dollPerUnit) : 0;
+  const perUnit = giftPerUnit(gift);
+  const need = perUnit.doll > 0 ? Math.ceil(target / perUnit.doll) : 0;
   const currencyLabel = gift.currency === 'free' ? '無償' : '有償';
 
   $('dollNeedCountLabel').textContent = `限界突破ぶる太くん人形${integer(target)}個獲得に必要な個数の目安`;
   $('dollNeedCoinsLabel').textContent = `限界突破ぶる太くん人形${integer(target)}個獲得に必要なコイン数の目安`;
   $('dollNeedCount').textContent = `${integer(need)} 個`;
   $('dollNeedCoins').textContent = `${integer(need * gift.price)} コイン(${currencyLabel})`;
-  $('dollExpectedResult').textContent = `${decimal(need * dollPerUnit)} 個`;
+  $('dollExpectedResult').textContent = `${decimal(need * perUnit.doll)} 個`;
+  applyEmomoResult('emomoResultDoll', 'emomoProbDoll', need * perUnit.draws);
 
   $('dollComparison').innerHTML = Object.entries(gifts).map(([key, rowGift]) => {
     const rowDollPerUnit = giftPerUnit(rowGift).doll;
@@ -226,10 +321,26 @@ function initTabs() {
   });
 }
 
+function initEmomo() {
+  $('emomoEnabled').addEventListener('change', () => {
+    emomoEnabled = $('emomoEnabled').checked;
+    $('emomoState').textContent = emomoEnabled ? 'ON' : 'OFF';
+    $('emomoBar').classList.toggle('is-active', emomoEnabled);
+    $('emomoSelect').hidden = !emomoEnabled;
+    render();
+  });
+  $('emomoRarity').addEventListener('change', () => {
+    updateEmomoItemOptions();
+    render();
+  });
+  $('emomoItem').addEventListener('change', render);
+}
+
 document.querySelectorAll('input, select').forEach(el => el.addEventListener('input', render));
 document.querySelectorAll('input[type="number"]').forEach(el => el.addEventListener('focus', () => el.select()));
 document.querySelectorAll('input[type="number"]').forEach(el => el.addEventListener('blur', () => {
   if (el.value === '') el.value = 0;
 }));
 initTabs();
+initEmomo();
 render();
