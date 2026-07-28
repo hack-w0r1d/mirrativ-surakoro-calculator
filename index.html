@@ -1,0 +1,301 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BKD9T5BP9D"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-BKD9T5BP9D');
+    </script>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>スラコロ専用ギフト期待値計算ツール</title>
+    <!-- 検索用説明文 -->
+    <meta name="description" content="配信アプリ「Mirrativ」でスラコロ専用ギフトの期待値を計算できる便利なツールです。">
+    <!-- OGPタグ（SNSでシェアされたときの見た目用） -->
+    <meta property="og:title" content="スラコロ専用ギフト期待値計算ツール">
+    <meta property="og:description" content="スラコロ専用ギフトの期待値を簡単に確認！">
+    <meta property="og:image" content="https://hack-w0r1d.github.io/mirrativ-surakoro-calculator/images/x-card.jpg">
+    <meta property="og:url" content="https://hack-w0r1d.github.io/mirrativ-surakoro-calculator/">
+    <meta property="og:type" content="website">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="スラコロ専用ギフト期待値計算ツール">
+    <meta name="twitter:description" content="スラコロ専用ギフトの期待値を簡単に確認！">
+    <meta name="twitter:image" content="https://hack-w0r1d.github.io/mirrativ-surakoro-calculator/images/x-card.jpg">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎁</text></svg>">
+    <link rel="stylesheet" href="style.css?v=1.0.0">
+    <link rel="apple-touch-icon" sizes="192x192" href="apple-touch-icon.jpg">
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>スラコロ専用ギフト<br class="sp-only">期待値計算ツール</h1>
+        <p class="lead">スラコロ専用ギフトで獲得できるGP・オッズ・アイテムの期待値の目安や確率を確認できます。</p>
+      </header>
+      <div class="tabs" role="tablist" aria-label="計算メニュー">
+        <button type="button" class="tab" id="tab-send" role="tab" aria-selected="true" aria-controls="panel-send" data-target="panel-send">贈る個数から計算</button>
+        <button type="button" class="tab" id="tab-budget" role="tab" aria-selected="false" aria-controls="panel-budget" data-target="panel-budget" tabindex="-1">使用コインから計算</button>
+        <button type="button" class="tab" id="tab-gp" role="tab" aria-selected="false" aria-controls="panel-gp" data-target="panel-gp" tabindex="-1">目標GPから計算</button>
+        <button type="button" class="tab" id="tab-odds" role="tab" aria-selected="false" aria-controls="panel-odds" data-target="panel-odds" tabindex="-1">目標オッズから計算</button>
+        <button type="button" class="tab" id="tab-item" role="tab" aria-selected="false" aria-controls="panel-item" data-target="panel-item" tabindex="-1">目標ぶる太数から計算</button>
+      </div>
+      <section class="card panel" id="panel-send" role="tabpanel" aria-labelledby="tab-send" tabindex="0">
+        <h2>贈る個数から計算</h2>
+        <p class="hint">贈る予定のスラコロ専用ギフトの個数を入力してください。</p>
+        <div class="grid">
+          <div>
+            <label for="normalSingle">普通の宝箱(100) / 個</label>
+            <input id="normalSingle" type="number" min="0" step="1" value="0">
+          </div>
+          <div>
+            <label for="normalTen">10連 普通の宝箱(1000) / 個</label>
+            <input id="normalTen" type="number" min="0" step="1" value="0">
+          </div>
+          <div>
+            <label for="deluxeSingle">豪華な宝箱(100) / 個</label>
+            <input id="deluxeSingle" type="number" min="0" step="1" value="0">
+          </div>
+          <div>
+            <label for="deluxeTen">10連 豪華な宝箱(1000) / 個</label>
+            <input id="deluxeTen" type="number" min="0" step="1" value="0">
+          </div>
+        </div>
+        <div class="results">
+          <div class="result">
+            <span>GP期待値</span>
+            <b id="gpResult">0 GP</b>
+          </div>
+          <div class="result">
+            <span>オッズ期待値</span>
+            <b id="oddsResult">0 Lv.Up</b>
+          </div>
+          <div class="result">
+            <span>限界突破ぶる太くん人形期待値</span>
+            <b id="dollResult">0 個</b>
+          </div>
+          <div class="result">
+            <span>エモモの宝玉期待値</span>
+            <b id="gemResult">0 個</b>
+          </div>
+          <div class="result">
+            <span>獲得メダル期待値</span>
+            <b id="medalResult">0 メダル</b>
+          </div>
+          <div class="result">
+            <span>消費無償コイン</span>
+            <b id="freeCoinsResult">0</b>
+          </div>
+          <div class="result">
+            <span>消費有償コイン</span>
+            <b id="paidCoinsResult">0</b>
+          </div>
+        </div>
+      </section>
+      <section class="card panel" id="panel-budget" role="tabpanel" aria-labelledby="tab-budget" tabindex="0" hidden>
+        <h2>使用コインから計算</h2>
+        <p class="hint">使用できる無償コイン・有償コインの上限額を入力してください。</p>
+        <div class="grid two">
+          <div>
+            <label for="budgetFree">使用可能な無償コイン</label>
+            <input id="budgetFree" type="number" min="0" step="1" value="0">
+          </div>
+          <div>
+            <label for="budgetPaid">使用可能な有償コイン</label>
+            <input id="budgetPaid" type="number" min="0" step="1" value="0">
+          </div>
+        </div>
+        <div class="results">
+          <div class="result">
+            <span>GP期待値</span>
+            <b id="budgetGpResult">0 GP</b>
+          </div>
+          <div class="result">
+            <span>オッズ期待値</span>
+            <b id="budgetOddsResult">0 Lv.Up</b>
+          </div>
+          <div class="result">
+            <span>限界突破ぶる太くん人形期待値</span>
+            <b id="budgetDollResult">0 個</b>
+          </div>
+          <div class="result">
+            <span>エモモの宝玉期待値</span>
+            <b id="budgetGemResult">0 個</b>
+          </div>
+          <div class="result">
+            <span>獲得メダル期待値</span>
+            <b id="budgetMedalResult">0 メダル</b>
+          </div>
+        </div>
+        <table class="comparison">
+          <thead>
+            <tr>
+              <th>ギフト</th>
+              <th>贈る個数</th>
+              <th>消費コイン</th>
+            </tr>
+          </thead>
+          <tbody id="budgetComparison"></tbody>
+        </table>
+        <p class="note">
+          ※ 有償コインは豪華な宝箱に使用する想定です。<br>
+          ※ コインあたりの期待値が高いギフト（10連 普通の宝箱 &gt; 普通の宝箱 / 10連 豪華な宝箱 &gt; 豪華な宝箱）から優先して使い切る組み合わせを想定して表示しています。
+        </p>
+      </section>
+      <section class="card panel" id="panel-gp" role="tabpanel" aria-labelledby="tab-gp" tabindex="0" hidden>
+        <h2>目標GPから計算</h2>
+        <p class="hint">目標のGPを貯めるために必要なギフト数の目安を計算します。</p>
+        <div class="grid two">
+          <div>
+            <label for="gpTarget">目標GP / ポイント</label>
+            <input id="gpTarget" type="number" min="0" step="1" value="0">
+          </div>
+          <div>
+            <label for="gpStock">目標チャンスストック(500GP) / 個分</label>
+            <input id="gpStock" type="number" min="0" step="1" value="0">
+          </div>
+          <div>
+            <label for="gpGiftType">使用するギフト(種類)</label>
+            <select id="gpGiftType">
+              <option value="normalSingle">普通の宝箱(100)</option>
+              <option value="normalTen">10連 普通の宝箱(1000)</option>
+              <option value="deluxeSingle">豪華な宝箱(100)</option>
+              <option value="deluxeTen">10連 豪華な宝箱(1000)</option>
+            </select>
+          </div>
+        </div>
+        <div class="results">
+          <div class="result is-highlight">
+            <span id="gpNeedCountLabel">GP貯めるのに必要な個数の目安</span>
+            <b id="gpNeedCount">0 個</b>
+          </div>
+          <div class="result">
+            <span id="gpNeedCoinsLabel">GP貯めるのに必要なコイン数の目安</span>
+            <b id="gpNeedCoins">0</b>
+          </div>
+          <div class="result">
+            <span>GP期待値</span>
+            <b id="gpExpectedResult">0 GP</b>
+          </div>
+        </div>
+        <table class="comparison">
+          <thead>
+            <tr>
+              <th>ギフト</th>
+              <th>必要個数の目安</th>
+              <th>必要コイン</th>
+            </tr>
+          </thead>
+          <tbody id="gpComparison"></tbody>
+        </table>
+        <p class="note">※ 確率に基づく期待値です。実際に貯まるGPは各種宝箱の中身によって前後するため、目標達成を保証する数値ではありません。</p>
+      </section>
+      <section class="card panel" id="panel-odds" role="tabpanel" aria-labelledby="tab-odds" tabindex="0" hidden>
+        <h2>目標オッズから計算</h2>
+        <p class="hint">目標のオッズLv.を上げるために必要なギフト数の目安を計算します。</p>
+        <div class="grid two">
+          <div>
+            <label for="oddsTarget">目標オッズ / Lv.(ストック分も含む)</label>
+            <input id="oddsTarget" type="number" min="0" step="1" value="0">
+          </div>
+          <div>
+            <label for="oddsGiftType">使用するギフト(種類)</label>
+            <select id="oddsGiftType">
+              <option value="normalSingle">普通の宝箱(100)</option>
+              <option value="normalTen">10連 普通の宝箱(1000)</option>
+              <option value="deluxeSingle">豪華な宝箱(100)</option>
+              <option value="deluxeTen">10連 豪華な宝箱(1000)</option>
+            </select>
+          </div>
+        </div>
+        <div class="results">
+          <div class="result is-highlight">
+            <span id="oddsNeedCountLabel">オッズLv.0Upに必要な個数の目安</span>
+            <b id="oddsNeedCount">0 個</b>
+          </div>
+          <div class="result">
+            <span id="oddsNeedCoinsLabel">オッズLv.0Upに必要なコイン数の目安</span>
+            <b id="oddsNeedCoins">0</b>
+          </div>
+          <div class="result">
+            <span>オッズ期待値</span>
+            <b id="oddsExpectedResult">0 Lv.Up</b>
+          </div>
+        </div>
+        <table class="comparison">
+          <thead>
+            <tr>
+              <th>ギフト</th>
+              <th>必要個数の目安</th>
+              <th>必要コイン</th>
+            </tr>
+          </thead>
+          <tbody id="oddsComparison"></tbody>
+        </table>
+        <p class="note">※ 確率に基づく期待値です。実際に上がるオッズは各種宝箱の中身によって前後するため、目標達成を保証する数値ではありません。</p>
+      </section>
+      <section class="card panel" id="panel-item" role="tabpanel" aria-labelledby="tab-item" tabindex="0" hidden>
+        <h2>目標の限界突破ぶる太くん人形数から計算</h2>
+        <p class="hint">目標の限界突破ぶる太くん人形の個数を獲得するために必要なギフト数の目安を計算します。</p>
+        <div class="grid two">
+          <div>
+            <label for="dollTarget">目標の限界突破ぶる太くん人形数 / 個</label>
+            <input id="dollTarget" type="number" min="0" step="1" value="0">
+          </div>
+          <div>
+            <label for="dollGiftType">使用するギフト(種類)</label>
+            <select id="dollGiftType">
+              <option value="normalSingle">普通の宝箱(100)</option>
+              <option value="normalTen">10連 普通の宝箱(1000)</option>
+              <option value="deluxeSingle">豪華な宝箱(100)</option>
+              <option value="deluxeTen">10連 豪華な宝箱(1000)</option>
+            </select>
+          </div>
+        </div>
+        <div class="results">
+          <div class="result is-highlight">
+            <span id="dollNeedCountLabel">限界突破ぶる太くん人形0個獲得に必要な個数の目安</span>
+            <b id="dollNeedCount">0 個</b>
+          </div>
+          <div class="result">
+            <span id="dollNeedCoinsLabel">限界突破ぶる太くん人形0個獲得に必要なコイン数の目安</span>
+            <b id="dollNeedCoins">0</b>
+          </div>
+          <div class="result">
+            <span>限界突破ぶる太くん人形期待値</span>
+            <b id="dollExpectedResult">0 個</b>
+          </div>
+        </div>
+        <table class="comparison">
+          <thead>
+            <tr>
+              <th>ギフト</th>
+              <th>必要個数の目安</th>
+              <th>必要コイン</th>
+            </tr>
+          </thead>
+          <tbody id="dollComparison"></tbody>
+        </table>
+        <p class="note">※ 確率に基づく期待値です。実際に獲得できる限界突破ぶる太くん人形の数は各種宝箱の中身によって前後するため、目標達成を保証する数値ではありません。</p>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <div class="footer-inner">
+        <p class="footer-social">
+          <a href="https://x.com/yu_cielkun" target="_blank" rel="noopener noreferrer" aria-label="X (旧Twitter)">
+            <img id="x-logo" src="images/x-logo-black.png" alt="Xアカウント">
+          </a>
+        </p>
+        <p class="footer-credit">Created by Ciel'N</p>
+        <p class="footer-links">
+          <a href="privacy.html">プライバシーポリシー</a>
+          <a href="disclaimer.html">免責事項</a>
+        </p>
+      </div>
+    </footer>
+  <script src="script.js?v=1.0.0"></script>
+  </body>
+</html>
