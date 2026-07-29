@@ -91,7 +91,7 @@
         </div>
         <div class="results">
           <div class="result is-highlight emomo-result" id="emomoResultSend" hidden>
-            <span>選択したアイテムが当たる確率</span>
+            <span>選択したエモモアイテムが当たる確率</span>
             <b id="emomoProbSend">アイテムが選択されていません</b>
           </div>
           <div class="result">
@@ -139,7 +139,7 @@
         </div>
         <div class="results">
           <div class="result is-highlight emomo-result" id="emomoResultBudget" hidden>
-            <span>選択したアイテムが当たる確率</span>
+            <span>選択したエモモアイテムが当たる確率</span>
             <b id="emomoProbBudget">アイテムが選択されていません</b>
           </div>
           <div class="result">
@@ -191,26 +191,28 @@
             <input id="gpStock" type="number" min="0" step="1" value="0">
           </div>
           <div>
-            <label for="gpGiftType">使用するギフト(種類)</label>
-            <select id="gpGiftType">
-              <option value="normalSingle">普通の宝箱(100)</option>
-              <option value="normalTen">10連 普通の宝箱(1000)</option>
-              <option value="deluxeSingle">豪華な宝箱(100)</option>
-              <option value="deluxeTen">10連 豪華な宝箱(1000)</option>
+            <label for="gpCoinType">使用するコイン(種類)</label>
+            <select id="gpCoinType">
+              <option value="free">無償コイン</option>
+              <option value="paid">有償コイン</option>
             </select>
           </div>
         </div>
         <div class="results">
           <div class="result is-highlight emomo-result" id="emomoResultGp" hidden>
-            <span>選択したアイテムが当たる確率</span>
+            <span>選択したエモモアイテムが当たる確率</span>
             <b id="emomoProbGp">アイテムが選択されていません</b>
           </div>
-          <div class="result is-highlight">
-            <span id="gpNeedCountLabel">GP貯めるのに必要な個数の目安</span>
-            <b id="gpNeedCount">0 個</b>
+          <div class="result is-highlight" id="gpNeedTenResult">
+            <span id="gpNeedTenLabel">10連 普通の宝箱の個数の目安</span>
+            <b id="gpNeedTen">0 個</b>
+          </div>
+          <div class="result is-highlight" id="gpNeedSingleResult">
+            <span id="gpNeedSingleLabel">普通の宝箱の個数の目安</span>
+            <b id="gpNeedSingle">0 個</b>
           </div>
           <div class="result">
-            <span id="gpNeedCoinsLabel">GP貯めるのに必要なコイン数の目安</span>
+            <span id="gpNeedCoinsLabel">コイン数の目安</span>
             <b id="gpNeedCoins">0</b>
           </div>
           <div class="result">
@@ -239,26 +241,28 @@
             <input id="oddsTarget" type="number" min="0" step="1" value="0">
           </div>
           <div>
-            <label for="oddsGiftType">使用するギフト(種類)</label>
-            <select id="oddsGiftType">
-              <option value="normalSingle">普通の宝箱(100)</option>
-              <option value="normalTen">10連 普通の宝箱(1000)</option>
-              <option value="deluxeSingle">豪華な宝箱(100)</option>
-              <option value="deluxeTen">10連 豪華な宝箱(1000)</option>
+            <label for="oddsCoinType">使用するコイン(種類)</label>
+            <select id="oddsCoinType">
+              <option value="free">無償コイン</option>
+              <option value="paid">有償コイン</option>
             </select>
           </div>
         </div>
         <div class="results">
           <div class="result is-highlight emomo-result" id="emomoResultOdds" hidden>
-            <span>選択したアイテムが当たる確率</span>
+            <span>選択したエモモアイテムが当たる確率</span>
             <b id="emomoProbOdds">アイテムが選択されていません</b>
           </div>
-          <div class="result is-highlight">
-            <span id="oddsNeedCountLabel">オッズLv.0Upに必要な個数の目安</span>
-            <b id="oddsNeedCount">0 個</b>
+          <div class="result is-highlight" id="oddsNeedTenResult">
+            <span id="oddsNeedTenLabel">10連 普通の宝箱の個数の目安</span>
+            <b id="oddsNeedTen">0 個</b>
+          </div>
+          <div class="result is-highlight" id="oddsNeedSingleResult">
+            <span id="oddsNeedSingleLabel">普通の宝箱の個数の目安</span>
+            <b id="oddsNeedSingle">0 個</b>
           </div>
           <div class="result">
-            <span id="oddsNeedCoinsLabel">オッズLv.0Upに必要なコイン数の目安</span>
+            <span id="oddsNeedCoinsLabel">コイン数の目安</span>
             <b id="oddsNeedCoins">0</b>
           </div>
           <div class="result">
@@ -287,26 +291,28 @@
             <input id="dollTarget" type="number" min="0" step="1" value="0">
           </div>
           <div>
-            <label for="dollGiftType">使用するギフト(種類)</label>
-            <select id="dollGiftType">
-              <option value="normalSingle">普通の宝箱(100)</option>
-              <option value="normalTen">10連 普通の宝箱(1000)</option>
-              <option value="deluxeSingle">豪華な宝箱(100)</option>
-              <option value="deluxeTen">10連 豪華な宝箱(1000)</option>
+            <label for="dollCoinType">使用するコイン(種類)</label>
+            <select id="dollCoinType">
+              <option value="free">無償コイン</option>
+              <option value="paid">有償コイン</option>
             </select>
           </div>
         </div>
         <div class="results">
           <div class="result is-highlight emomo-result" id="emomoResultDoll" hidden>
-            <span>選択したアイテムが当たる確率</span>
+            <span>選択したエモモアイテムが当たる確率</span>
             <b id="emomoProbDoll">アイテムが選択されていません</b>
           </div>
-          <div class="result is-highlight">
-            <span id="dollNeedCountLabel">限界突破ぶる太くん人形0個獲得に必要な個数の目安</span>
-            <b id="dollNeedCount">0 個</b>
+          <div class="result is-highlight" id="dollNeedTenResult">
+            <span id="dollNeedTenLabel">10連 普通の宝箱の個数の目安</span>
+            <b id="dollNeedTen">0 個</b>
+          </div>
+          <div class="result is-highlight" id="dollNeedSingleResult">
+            <span id="dollNeedSingleLabel">普通の宝箱の個数の目安</span>
+            <b id="dollNeedSingle">0 個</b>
           </div>
           <div class="result">
-            <span id="dollNeedCoinsLabel">限界突破ぶる太くん人形0個獲得に必要なコイン数の目安</span>
+            <span id="dollNeedCoinsLabel">コイン数の目安</span>
             <b id="dollNeedCoins">0</b>
           </div>
           <div class="result">

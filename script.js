@@ -52,6 +52,39 @@ const giftInputIds = {
   deluxeTen: 'deluxeTen'
 };
 
+// 目標値に対し、指定コインの10連ギフトを優先消化しつつ単発で不足分を補う個数を算出する
+// (単発の必要数が10個以上になる場合は10連をもう1個追加し、単発は0個にする)
+function calcTenSingleNeed(target, tenPerUnit, singlePerUnit) {
+  let tenCount = tenPerUnit > 0 ? Math.floor(target / tenPerUnit) : 0;
+  const remainder = target - tenCount * tenPerUnit;
+  let singleCount = singlePerUnit > 0 ? Math.ceil(Math.max(0, remainder) / singlePerUnit) : 0;
+  if (singleCount >= 10) {
+    tenCount += 1;
+    singleCount = 0;
+  }
+  return { tenCount, singleCount };
+}
+
+// ten/single選択中コインの個数を、比較テーブルの4ギフト分の内訳に変換する(非選択側の通貨は常に0)
+function rowCountsFor(currency, tenCount, singleCount) {
+  return {
+    normalSingle: currency === 'free' ? singleCount : 0,
+    normalTen: currency === 'free' ? tenCount : 0,
+    deluxeSingle: currency === 'paid' ? singleCount : 0,
+    deluxeTen: currency === 'paid' ? tenCount : 0
+  };
+}
+
+function renderComparisonTable(tableId, currency, tenCount, singleCount) {
+  const rowCounts = rowCountsFor(currency, tenCount, singleCount);
+  $(tableId).innerHTML = Object.entries(gifts).map(([key, rowGift]) => {
+    const count = rowCounts[key];
+    const rowCurrencyLabel = rowGift.currency === 'free' ? '無償' : '有償';
+    const selectedClass = count > 0 ? 'is-selected' : '';
+    return `<tr class="${selectedClass}"><td>${rowGift.name}(${rowGift.price})</td><td>${integer(count)} 個</td><td>${integer(count * rowGift.price)} コイン(${rowCurrencyLabel})</td></tr>`;
+  }).join('');
+}
+
 // ===== エモモアイテム選択: エモモの宝玉 排出率データ =====
 // prob: 個別の排出確率(小数)。「その他」は各レア度で一番確率の高いアイテム群のみを対象とし、
 // 表示確率は合算せず、番号が一番若いアイテムの個別確率を代表値として使用する
@@ -212,83 +245,74 @@ function renderGp() {
   const target = number('gpTarget');
   const stock = number('gpStock');
   const totalTarget = target + stock * 500;
-  const selectedKey = $('gpGiftType').value;
-  const gift = gifts[selectedKey];
-  const perUnit = giftPerUnit(gift);
-  const gpPerUnit = perUnit.draws * GP_PER_DRAW;
-  const need = gpPerUnit > 0 ? Math.ceil(totalTarget / gpPerUnit) : 0;
-  const currencyLabel = gift.currency === 'free' ? '無償' : '有償';
-  let prefix;
-  if (stock > 0 && target > 0) {
-    prefix = `チャンスストック${integer(stock)}個と${integer(target)}GP`;
-  } else if (stock > 0) {
-    prefix = `チャンスストック${integer(stock)}個`;
-  } else {
-    prefix = `${integer(target)}GP`;
-  }
+  const currency = $('gpCoinType').value;
+  const tenGift = currency === 'free' ? gifts.normalTen : gifts.deluxeTen;
+  const singleGift = currency === 'free' ? gifts.normalSingle : gifts.deluxeSingle;
+  const tenPerUnit = giftPerUnit(tenGift);
+  const singlePerUnit = giftPerUnit(singleGift);
+  const gpPerTen = tenPerUnit.draws * GP_PER_DRAW;
+  const gpPerSingle = singlePerUnit.draws * GP_PER_DRAW;
+  const { tenCount, singleCount } = calcTenSingleNeed(totalTarget, gpPerTen, gpPerSingle);
+  const currencyLabel = currency === 'free' ? '無償' : '有償';
 
-  $('gpNeedCountLabel').textContent = `${prefix}貯めるのに必要な個数の目安`;
-  $('gpNeedCoinsLabel').textContent = `${prefix}貯めるのに必要なコイン数の目安`;
-  $('gpNeedCount').textContent = `${integer(need)} 個`;
-  $('gpNeedCoins').textContent = `${integer(need * gift.price)} コイン(${currencyLabel})`;
-  $('gpExpectedResult').textContent = `${decimal(need * gpPerUnit)} GP`;
-  applyEmomoResult('emomoResultGp', 'emomoProbGp', need * perUnit.draws);
-
-  $('gpComparison').innerHTML = Object.entries(gifts).map(([key, rowGift]) => {
-    const rowGpPerUnit = giftPerUnit(rowGift).draws * GP_PER_DRAW;
-    const count = rowGpPerUnit > 0 ? Math.ceil(totalTarget / rowGpPerUnit) : 0;
-    const rowCurrencyLabel = rowGift.currency === 'free' ? '無償' : '有償';
-    const selectedClass = key === selectedKey ? 'is-selected' : '';
-    return `<tr class="${selectedClass}"><td>${rowGift.name}(${rowGift.price})</td><td>${integer(count)} 個</td><td>${integer(count * rowGift.price)} コイン(${rowCurrencyLabel})</td></tr>`;
-  }).join('');
+  $('gpNeedTenLabel').textContent = `${tenGift.name}の個数の目安`;
+  $('gpNeedSingleLabel').textContent = `${singleGift.name}の個数の目安`;
+  $('gpNeedTen').textContent = `${integer(tenCount)} 個`;
+  $('gpNeedSingle').textContent = `${integer(singleCount)} 個`;
+  $('gpNeedTenResult').hidden = tenCount === 0;
+  $('gpNeedSingleResult').hidden = singleCount === 0;
+  $('gpNeedCoins').textContent = `${integer(tenCount * tenGift.price + singleCount * singleGift.price)} コイン(${currencyLabel})`;
+  const totalDraws = tenCount * tenPerUnit.draws + singleCount * singlePerUnit.draws;
+  $('gpExpectedResult').textContent = `${decimal(totalDraws * GP_PER_DRAW)} GP`;
+  applyEmomoResult('emomoResultGp', 'emomoProbGp', totalDraws);
+  renderComparisonTable('gpComparison', currency, tenCount, singleCount);
 }
 
 function renderOdds() {
   const target = number('oddsTarget');
-  const selectedKey = $('oddsGiftType').value;
-  const gift = gifts[selectedKey];
-  const oddsPerUnit = giftPerUnit(gift).draws;
-  const need = oddsPerUnit > 0 ? Math.ceil(target / oddsPerUnit) : 0;
-  const currencyLabel = gift.currency === 'free' ? '無償' : '有償';
+  const currency = $('oddsCoinType').value;
+  const tenGift = currency === 'free' ? gifts.normalTen : gifts.deluxeTen;
+  const singleGift = currency === 'free' ? gifts.normalSingle : gifts.deluxeSingle;
+  const tenPerUnit = giftPerUnit(tenGift);
+  const singlePerUnit = giftPerUnit(singleGift);
+  const { tenCount, singleCount } = calcTenSingleNeed(target, tenPerUnit.draws, singlePerUnit.draws);
+  const currencyLabel = currency === 'free' ? '無償' : '有償';
 
-  $('oddsNeedCountLabel').textContent = `オッズLv.${integer(target)}Upに必要な個数の目安`;
-  $('oddsNeedCoinsLabel').textContent = `オッズLv.${integer(target)}Upに必要なコイン数の目安`;
-  $('oddsNeedCount').textContent = `${integer(need)} 個`;
-  $('oddsNeedCoins').textContent = `${integer(need * gift.price)} コイン(${currencyLabel})`;
-  $('oddsExpectedResult').textContent = `${decimal(need * oddsPerUnit)} Lv.Up`;
-  applyEmomoResult('emomoResultOdds', 'emomoProbOdds', need * oddsPerUnit);
-
-  $('oddsComparison').innerHTML = Object.entries(gifts).map(([key, rowGift]) => {
-    const rowOddsPerUnit = giftPerUnit(rowGift).draws;
-    const count = rowOddsPerUnit > 0 ? Math.ceil(target / rowOddsPerUnit) : 0;
-    const rowCurrencyLabel = rowGift.currency === 'free' ? '無償' : '有償';
-    const selectedClass = key === selectedKey ? 'is-selected' : '';
-    return `<tr class="${selectedClass}"><td>${rowGift.name}(${rowGift.price})</td><td>${integer(count)} 個</td><td>${integer(count * rowGift.price)} コイン(${rowCurrencyLabel})</td></tr>`;
-  }).join('');
+  $('oddsNeedTenLabel').textContent = `${tenGift.name}の個数の目安`;
+  $('oddsNeedSingleLabel').textContent = `${singleGift.name}の個数の目安`;
+  $('oddsNeedTen').textContent = `${integer(tenCount)} 個`;
+  $('oddsNeedSingle').textContent = `${integer(singleCount)} 個`;
+  $('oddsNeedTenResult').hidden = tenCount === 0;
+  $('oddsNeedSingleResult').hidden = singleCount === 0;
+  $('oddsNeedCoins').textContent = `${integer(tenCount * tenGift.price + singleCount * singleGift.price)} コイン(${currencyLabel})`;
+  const totalDraws = tenCount * tenPerUnit.draws + singleCount * singlePerUnit.draws;
+  $('oddsExpectedResult').textContent = `${decimal(totalDraws)} Lv.Up`;
+  applyEmomoResult('emomoResultOdds', 'emomoProbOdds', totalDraws);
+  renderComparisonTable('oddsComparison', currency, tenCount, singleCount);
 }
 
 function renderDoll() {
   const target = number('dollTarget');
-  const selectedKey = $('dollGiftType').value;
-  const gift = gifts[selectedKey];
-  const perUnit = giftPerUnit(gift);
-  const need = perUnit.doll > 0 ? Math.ceil(target / perUnit.doll) : 0;
-  const currencyLabel = gift.currency === 'free' ? '無償' : '有償';
+  const currency = $('dollCoinType').value;
+  const tenGift = currency === 'free' ? gifts.normalTen : gifts.deluxeTen;
+  const singleGift = currency === 'free' ? gifts.normalSingle : gifts.deluxeSingle;
+  const tenPerUnit = giftPerUnit(tenGift);
+  const singlePerUnit = giftPerUnit(singleGift);
+  const { tenCount, singleCount } = calcTenSingleNeed(target, tenPerUnit.doll, singlePerUnit.doll);
+  const currencyLabel = currency === 'free' ? '無償' : '有償';
 
-  $('dollNeedCountLabel').textContent = `限界突破ぶる太くん人形${integer(target)}個獲得に必要な個数の目安`;
-  $('dollNeedCoinsLabel').textContent = `限界突破ぶる太くん人形${integer(target)}個獲得に必要なコイン数の目安`;
-  $('dollNeedCount').textContent = `${integer(need)} 個`;
-  $('dollNeedCoins').textContent = `${integer(need * gift.price)} コイン(${currencyLabel})`;
-  $('dollExpectedResult').textContent = `${decimal(need * perUnit.doll)} 個`;
-  applyEmomoResult('emomoResultDoll', 'emomoProbDoll', need * perUnit.draws);
-
-  $('dollComparison').innerHTML = Object.entries(gifts).map(([key, rowGift]) => {
-    const rowDollPerUnit = giftPerUnit(rowGift).doll;
-    const count = rowDollPerUnit > 0 ? Math.ceil(target / rowDollPerUnit) : 0;
-    const rowCurrencyLabel = rowGift.currency === 'free' ? '無償' : '有償';
-    const selectedClass = key === selectedKey ? 'is-selected' : '';
-    return `<tr class="${selectedClass}"><td>${rowGift.name}(${rowGift.price})</td><td>${integer(count)} 個</td><td>${integer(count * rowGift.price)} コイン(${rowCurrencyLabel})</td></tr>`;
-  }).join('');
+  $('dollNeedTenLabel').textContent = `${tenGift.name}の個数の目安`;
+  $('dollNeedSingleLabel').textContent = `${singleGift.name}の個数の目安`;
+  $('dollNeedTen').textContent = `${integer(tenCount)} 個`;
+  $('dollNeedSingle').textContent = `${integer(singleCount)} 個`;
+  $('dollNeedTenResult').hidden = tenCount === 0;
+  $('dollNeedSingleResult').hidden = singleCount === 0;
+  $('dollNeedCoins').textContent = `${integer(tenCount * tenGift.price + singleCount * singleGift.price)} コイン(${currencyLabel})`;
+  const totalDraws = tenCount * tenPerUnit.draws + singleCount * singlePerUnit.draws;
+  const totalDoll = tenCount * tenPerUnit.doll + singleCount * singlePerUnit.doll;
+  $('dollExpectedResult').textContent = `${decimal(totalDoll)} 個`;
+  applyEmomoResult('emomoResultDoll', 'emomoProbDoll', totalDraws);
+  renderComparisonTable('dollComparison', currency, tenCount, singleCount);
 }
 
 function render() {
