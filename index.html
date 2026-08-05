@@ -27,7 +27,7 @@
     <meta name="twitter:description" content="スラコロ専用ギフトの期待値を簡単に確認！">
     <meta name="twitter:image" content="https://hack-w0r1d.github.io/mirrativ-surakoro-calculator/images/x-card.jpg">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎁</text></svg>">
-    <link rel="stylesheet" href="style.css?v=1.1.0">
+    <link rel="stylesheet" href="style.css?v=1.1.1">
     <link rel="apple-touch-icon" sizes="192x192" href="apple-touch-icon.jpg">
   </head>
   <body>
@@ -203,17 +203,17 @@
             <span>選択したエモモアイテムが当たる確率</span>
             <b id="emomoProbGp">アイテムが選択されていません</b>
           </div>
-          <div class="result is-highlight" id="gpNeedTenResult">
+          <div class="result is-highlight" id="gpNeedTenResult" hidden>
             <span id="gpNeedTenLabel">10連 普通の宝箱の個数の目安</span>
             <b id="gpNeedTen">0 個</b>
           </div>
-          <div class="result is-highlight" id="gpNeedSingleResult">
+          <div class="result is-highlight" id="gpNeedSingleResult" hidden>
             <span id="gpNeedSingleLabel">普通の宝箱の個数の目安</span>
             <b id="gpNeedSingle">0 個</b>
           </div>
           <div class="result">
             <span id="gpNeedCoinsLabel">コイン数の目安</span>
-            <b id="gpNeedCoins">0</b>
+            <b id="gpNeedCoins">0 コイン(無償)</b>
           </div>
           <div class="result">
             <span>GP期待値</span>
@@ -253,17 +253,17 @@
             <span>選択したエモモアイテムが当たる確率</span>
             <b id="emomoProbOdds">アイテムが選択されていません</b>
           </div>
-          <div class="result is-highlight" id="oddsNeedTenResult">
+          <div class="result is-highlight" id="oddsNeedTenResult" hidden>
             <span id="oddsNeedTenLabel">10連 普通の宝箱の個数の目安</span>
             <b id="oddsNeedTen">0 個</b>
           </div>
-          <div class="result is-highlight" id="oddsNeedSingleResult">
+          <div class="result is-highlight" id="oddsNeedSingleResult" hidden>
             <span id="oddsNeedSingleLabel">普通の宝箱の個数の目安</span>
             <b id="oddsNeedSingle">0 個</b>
           </div>
           <div class="result">
             <span id="oddsNeedCoinsLabel">コイン数の目安</span>
-            <b id="oddsNeedCoins">0</b>
+            <b id="oddsNeedCoins">0 コイン(無償)</b>
           </div>
           <div class="result">
             <span>オッズ期待値</span>
@@ -303,17 +303,17 @@
             <span>選択したエモモアイテムが当たる確率</span>
             <b id="emomoProbDoll">アイテムが選択されていません</b>
           </div>
-          <div class="result is-highlight" id="dollNeedTenResult">
+          <div class="result is-highlight" id="dollNeedTenResult" hidden>
             <span id="dollNeedTenLabel">10連 普通の宝箱の個数の目安</span>
             <b id="dollNeedTen">0 個</b>
           </div>
-          <div class="result is-highlight" id="dollNeedSingleResult">
+          <div class="result is-highlight" id="dollNeedSingleResult" hidden>
             <span id="dollNeedSingleLabel">普通の宝箱の個数の目安</span>
             <b id="dollNeedSingle">0 個</b>
           </div>
           <div class="result">
             <span id="dollNeedCoinsLabel">コイン数の目安</span>
-            <b id="dollNeedCoins">0</b>
+            <b id="dollNeedCoins">0 コイン(無償)</b>
           </div>
           <div class="result">
             <span>限界突破ぶる太くん人形期待値</span>
@@ -335,18 +335,18 @@
     </main>
     <footer class="site-footer">
       <div class="footer-inner">
+        <p class="footer-links">
+          <a href="privacy.html">プライバシーポリシー</a>
+          <a href="disclaimer.html">免責事項</a>
+        </p>
+        <p class="footer-credit">Created by Ciel'N</p>
         <p class="footer-social">
           <a href="https://x.com/yu_cielkun" target="_blank" rel="noopener noreferrer" aria-label="X (旧Twitter)">
             <img id="x-logo" src="images/x-logo-black.png" alt="Xアカウント">
           </a>
         </p>
-        <p class="footer-credit">Created by Ciel'N</p>
-        <p class="footer-links">
-          <a href="privacy.html">プライバシーポリシー</a>
-          <a href="disclaimer.html">免責事項</a>
-        </p>
       </div>
     </footer>
-  <script src="script.js?v=1.1.0"></script>
+  <script src="script.js?v=1.1.1"></script>
   </body>
 </html>

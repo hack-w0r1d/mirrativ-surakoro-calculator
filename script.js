@@ -75,9 +75,18 @@ function rowCountsFor(currency, tenCount, singleCount) {
   };
 }
 
+// 比較テーブルでハイライト対象(該当個数1個以上)になった行を優先的に上位表示するための優先順位
+// (10連 豪華な宝箱 > 豪華な宝箱 > 10連 普通の宝箱 > 普通の宝箱)
+const highlightPriority = ['deluxeTen', 'deluxeSingle', 'normalTen', 'normalSingle'];
+
 function renderComparisonTable(tableId, currency, tenCount, singleCount) {
   const rowCounts = rowCountsFor(currency, tenCount, singleCount);
-  $(tableId).innerHTML = Object.entries(gifts).map(([key, rowGift]) => {
+  const baseOrder = Object.keys(gifts);
+  const highlightedKeys = highlightPriority.filter(key => rowCounts[key] > 0);
+  const restKeys = baseOrder.filter(key => rowCounts[key] === 0);
+  const orderedKeys = [...highlightedKeys, ...restKeys];
+  $(tableId).innerHTML = orderedKeys.map(key => {
+    const rowGift = gifts[key];
     const count = rowCounts[key];
     const rowCurrencyLabel = rowGift.currency === 'free' ? '無償' : '有償';
     const selectedClass = count > 0 ? 'is-selected' : '';

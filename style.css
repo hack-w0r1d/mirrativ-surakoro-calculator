@@ -52,7 +52,7 @@ main {
   display: block;
   width: fit-content;
   margin: 20px 20px 0 auto;
-  color: var(--link-ink);
+  color: var(--curtain-deep);
   font-size: 13px;
   text-decoration: none;
 }
