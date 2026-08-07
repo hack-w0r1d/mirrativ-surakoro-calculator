@@ -330,12 +330,50 @@ function renderDoll() {
   renderComparisonTable('dollComparison', currency, tenCount, singleCount);
 }
 
+// ===== 連勝ボーナス =====
+// 連勝数ごとに獲得できるGP。ボーナスは1日1回のみ獲得可能なため、本日の最大連勝数より高い連勝数のみが対象
+const streakBonusGp = { 3: 20, 4: 40, 5: 80, 6: 140, 7: 220, 8: 500, 9: 500, 10: 500 };
+const CHANCE_MODE_GP = 500;
+
+// currentGp(現在のGP)に、todayMaxStreak(本日の最大連勝数)より高い連勝のボーナスを
+// 3連勝側から順に積み上げていき、合計がCHANCE_MODE_GPに達する最小の連勝数を返す
+// (本日すでに獲得済みの連勝数以下のボーナスは再獲得できないため積み上げの対象外)
+// 現在のGPは0〜499のため必要GPは最大500(0〜499)となり、8連勝以降のボーナス(500GP)だけで必ず到達できる
+function calcStreakNeeded(currentGp, todayMaxStreak) {
+  if (todayMaxStreak >= 10) return { allClaimed: true };
+  const neededGp = CHANCE_MODE_GP - currentGp;
+  let cumulative = 0;
+  for (let streak = Math.max(3, todayMaxStreak + 1); streak <= 10; streak++) {
+    cumulative += streakBonusGp[streak];
+    if (cumulative >= neededGp) {
+      return { streak };
+    }
+  }
+}
+
+function renderStreak() {
+  const currentGp = Math.min(499, number('streakCurrentGp'));
+  const todayMaxStreak = number('streakMaxToday');
+  if (currentGp === 499) {
+    // 勝利するたびに別途1GPが加算されるため、499の時点で次の1勝(連勝数を問わない)だけでチャンスモードに突入する
+    $('streakNeed').textContent = 'あと 1勝 でチャンスモード突入！';
+    return;
+  }
+  const result = calcStreakNeeded(currentGp, todayMaxStreak);
+  if (result.allClaimed) {
+    $('streakNeed').textContent = '本日の連勝ボーナスは全て獲得しています';
+  } else {
+    $('streakNeed').textContent = `${result.streak} 連勝`;
+  }
+}
+
 function render() {
   renderSend();
   renderBudget();
   renderGp();
   renderOdds();
   renderDoll();
+  renderStreak();
 }
 
 function initTabs() {
@@ -380,6 +418,11 @@ document.querySelectorAll('input[type="number"]').forEach(el => el.addEventListe
 document.querySelectorAll('input[type="number"]').forEach(el => el.addEventListener('blur', () => {
   if (el.value === '') el.value = 0;
 }));
+$('streakCurrentGp').addEventListener('input', () => {
+  if (number('streakCurrentGp') > 499) {
+    $('streakCurrentGp').value = 499;
+  }
+});
 initTabs();
 initEmomo();
 render();
