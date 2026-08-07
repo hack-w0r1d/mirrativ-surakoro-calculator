@@ -228,13 +228,14 @@ function renderBudget() {
   let totalMedal = 0;
   let totalDoll = 0;
 
-  const rows = Object.entries(gifts).map(([key, gift]) => {
+  const rowsByKey = {};
+  Object.entries(gifts).forEach(([key, gift]) => {
     const count = counts[key];
     const perUnit = giftPerUnit(gift);
     totalDraws += count * perUnit.draws;
     totalMedal += count * perUnit.medal;
     totalDoll += count * perUnit.doll;
-    return { gift, count, spent: count * gift.price };
+    rowsByKey[key] = { gift, count, spent: count * gift.price };
   });
 
   $('budgetGpResult').textContent = `${decimal(totalDraws * GP_PER_DRAW)} GP`;
@@ -243,7 +244,12 @@ function renderBudget() {
   $('budgetGemResult').textContent = `${decimal(totalDraws)} 個`;
   $('budgetMedalResult').textContent = `${decimal(totalMedal)} メダル`;
   applyEmomoResult('emomoResultBudget', 'emomoProbBudget', totalDraws);
-  $('budgetComparison').innerHTML = rows.map(row => {
+
+  const highlightedKeys = highlightPriority.filter(key => rowsByKey[key].count > 0);
+  const restKeys = Object.keys(gifts).filter(key => rowsByKey[key].count === 0);
+  const orderedKeys = [...highlightedKeys, ...restKeys];
+  $('budgetComparison').innerHTML = orderedKeys.map(key => {
+    const row = rowsByKey[key];
     const selectedClass = row.count > 0 ? 'is-selected' : '';
     const currencyLabel = row.gift.currency === 'free' ? '無償' : '有償';
     return `<tr class="${selectedClass}"><td>${row.gift.name}(${row.gift.price})</td><td>${integer(row.count)} 個</td><td>${integer(row.spent)} コイン(${currencyLabel})</td></tr>`;
