@@ -354,16 +354,24 @@ function calcStreakNeeded(currentGp, todayMaxStreak) {
 function renderStreak() {
   const currentGp = Math.min(499, number('streakCurrentGp'));
   const todayMaxStreak = number('streakMaxToday');
+  const bonusRows = Array.from($('streakBonusTable').querySelectorAll('tr'));
+  bonusRows.forEach(row => row.classList.remove('is-selected'));
+
   if (currentGp === 499) {
     // 勝利するたびに別途1GPが加算されるため、499の時点で次の1勝(連勝数を問わない)だけでチャンスモードに突入する
-    $('streakNeed').textContent = 'あと 1勝 でチャンスモード突入！';
+    $('streakNeed').textContent = 'あと1勝でチャンスモード突入！';
     return;
   }
   const result = calcStreakNeeded(currentGp, todayMaxStreak);
   if (result.allClaimed) {
     $('streakNeed').textContent = '本日の連勝ボーナスは全て獲得しています';
-  } else {
-    $('streakNeed').textContent = `${result.streak} 連勝`;
+    return;
+  }
+  $('streakNeed').textContent = `${result.streak} 連勝`;
+  // 本日の最大連勝数+1〜必要連勝数の行をハイライトし、これから必要な連勝の範囲を視認しやすくする
+  for (let streak = todayMaxStreak + 1; streak <= result.streak; streak++) {
+    const row = bonusRows.find(r => Number(r.dataset.streak) === streak);
+    if (row) row.classList.add('is-selected');
   }
 }
 

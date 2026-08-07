@@ -468,6 +468,22 @@ select:focus {
   text-align: left;
 }
 
+.comparison.is-centered {
+  margin-top: 20px;
+}
+
+.comparison.is-centered th,
+.comparison.is-centered td {
+  text-align: center;
+}
+
+.comparison.is-centered thead th {
+  background: rgba(240, 193, 75, .16);
+  color: var(--gold);
+  font-weight: 700;
+  border-bottom-color: rgba(240, 193, 75, .4);
+}
+
 .comparison tbody tr:hover {
   background: rgba(255, 255, 255, .05);
 }
@@ -484,6 +500,11 @@ select:focus {
 .comparison tbody tr.is-selected td:first-child {
   color: var(--gold);
   font-weight: 700;
+}
+
+.comparison.is-centered tbody tr.is-selected td:first-child {
+  color: var(--gold-soft);
+  font-weight: normal;
 }
 
 .site-footer {
