@@ -60,7 +60,7 @@
       "}" +
       ".ghn-close:hover,.ghn-close:focus-visible{background:#f1f1f1;color:#333;}" +
       ".ghn-reopen{" +
-      "position:fixed;top:24vh;right:0;z-index:2147483000;" +
+      "position:fixed;top:0;right:0;z-index:2147483000;" +
       "background:#d64545;color:#fff;border:none;" +
       "border-radius:8px 0 0 8px;padding:10px 12px;" +
       "font-size:14px;cursor:pointer;display:none;" +
